@@ -128,19 +128,23 @@ public class BillingManagementSystem {
 	private static void generateReport() {
 		System.out.println("Sales report:");
 		System.out.println("Name\tPrice\tQuantity\tTotal");
+		int TotalSoldQuantity = 0;
 
 		for (InventoryItem item : inventory) {
+
 			int soldQuantity = item.getOriginalQuantity() - item.getQuantity();
+			TotalSoldQuantity += soldQuantity;
 			double total = item.getPrice() * soldQuantity;
+			totalAmount += total;
 			System.out.printf("%s\t%.2f\t%d\t%.2f\n", item.getName(), item.getPrice(), soldQuantity, total);
 		}
 
-		System.out.printf("Total Items: %d, Total Amount: $%.2f\n", totalItems, totalAmount);
+		System.out.printf("Total Items: %d, Total Amount: $%.2f\n", TotalSoldQuantity, totalAmount);
 	}
 
 	private static void generateReport(String name) {
 
-		System.out.printf("Sales report for ", name, ":");
+		System.out.printf("Sales report for %s:", name);
 		System.out.println("Name\tPrice\tQuantity\tTotal");
 
 		for (InventoryItem item : inventory) {
