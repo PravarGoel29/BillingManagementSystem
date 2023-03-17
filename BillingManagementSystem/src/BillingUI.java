@@ -5,9 +5,12 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class BillingUI extends JFrame {
+	private BillingManagementSystem billingManagementSystem;
+
 	public BillingUI() {
 		setTitle("Billing Management");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -21,88 +24,105 @@ public class BillingUI extends JFrame {
 
 		JButton addItemButton = new JButton("Add item");
 		JButton removeItemButton = new JButton("Remove item");
-		JButton DisplayInventoryStatusButton = new JButton("Display inventory status");
-		JButton GenerateReportButton = new JButton("Generate report");
-		JButton MakeSaleButton = new JButton("Make a sale");
-		JButton ChangeItemNameButton = new JButton("Change item name");
-		JButton ChangeItemPriceButton = new JButton("Change item price");
-		JButton ChangeItemQuantityButton = new JButton("Change item quantity");
-		JButton ExitButton = new JButton("Exit");
+		JButton displayInventoryStatusButton = new JButton("Display inventory status");
+		JButton generateReportButton = new JButton("Generate report");
+		JButton makeSaleButton = new JButton("Make a sale");
+		JButton changeItemNameButton = new JButton("Change item name");
+		JButton changeItemPriceButton = new JButton("Change item price");
+		JButton changeItemQuantityButton = new JButton("Change item quantity");
+		JButton exitButton = new JButton("Exit");
 
 		ButtonGroup buttonGroup = new ButtonGroup();
 		buttonGroup.add(addItemButton);
 		buttonGroup.add(removeItemButton);
-		buttonGroup.add(DisplayInventoryStatusButton);
-		buttonGroup.add(GenerateReportButton);
-		buttonGroup.add(MakeSaleButton);
-		buttonGroup.add(ChangeItemNameButton);
-		buttonGroup.add(ChangeItemPriceButton);
-		buttonGroup.add(ChangeItemQuantityButton);
-		buttonGroup.add(ExitButton);
+		buttonGroup.add(displayInventoryStatusButton);
+		buttonGroup.add(generateReportButton);
+		buttonGroup.add(makeSaleButton);
+		buttonGroup.add(changeItemNameButton);
+		buttonGroup.add(changeItemPriceButton);
+		buttonGroup.add(changeItemQuantityButton);
+		buttonGroup.add(exitButton);
 
 		panel.add(addItemButton);
 		panel.add(removeItemButton);
-		panel.add(DisplayInventoryStatusButton);
-		panel.add(GenerateReportButton);
-		panel.add(MakeSaleButton);
-		panel.add(ChangeItemNameButton);
-		panel.add(ChangeItemPriceButton);
-		panel.add(ChangeItemQuantityButton);
-		panel.add(ExitButton);
+		panel.add(displayInventoryStatusButton);
+		panel.add(generateReportButton);
+		panel.add(makeSaleButton);
+		panel.add(changeItemNameButton);
+		panel.add(changeItemPriceButton);
+		panel.add(changeItemQuantityButton);
+		panel.add(exitButton);
+
+		billingManagementSystem = new BillingManagementSystem();
 
 		addItemButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Call the addCustomer() method in the billing management class
-				BillingManagementSystem.addItem();
+				String itemName = JOptionPane.showInputDialog(null, "Enter item name:");
+				Double itemPrice = Double.parseDouble(JOptionPane.showInputDialog(null, "Enter item price:"));
+				Integer itemQuantity = Integer.parseInt(JOptionPane.showInputDialog(null, "Enter item quantity:"));
+				billingManagementSystem.addItem(itemName, itemPrice, itemQuantity);
 			}
 		});
 
 		removeItemButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Call the addCustomer() method in the billing management class
-				BillingManagementSystem.removeItem();
+				String itemName = JOptionPane.showInputDialog(null, "Enter item name:");
+				Integer itemQuantity = Integer.parseInt(JOptionPane.showInputDialog(null, "Enter item quantity:"));
+				billingManagementSystem.removeItem(itemName, itemQuantity);
 			}
 		});
-		DisplayInventoryStatusButton.addActionListener(new ActionListener() {
+
+		displayInventoryStatusButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Call the addCustomer() method in the billing management class
-				BillingManagementSystem.displayInventoryStatus();
+				billingManagementSystem.displayInventoryStatus();
 			}
 		});
-		GenerateReportButton.addActionListener(new ActionListener() {
+
+		generateReportButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Call the addCustomer() method in the billing management class
-				BillingManagementSystem.generateReportOption();
+				String itemName = JOptionPane.showInputDialog(null,
+						"Enter * to generate a total report or enter item name to generate item report");
+				billingManagementSystem.generateReportOption(itemName);
 			}
 		});
-		MakeSaleButton.addActionListener(new ActionListener() {
+
+		makeSaleButton.addActionListener(new ActionListener() {
+
 			public void actionPerformed(ActionEvent e) {
-				// Call the addCustomer() method in the billing management class
-				BillingManagementSystem.makeSale();
+				String itemName = JOptionPane.showInputDialog(null, "Enter item name:");
+				int quantity = Integer.parseInt(JOptionPane.showInputDialog(null, "Enter quantity:"));
+				billingManagementSystem.makeSale(itemName, quantity);
 			}
 		});
-		ChangeItemNameButton.addActionListener(new ActionListener() {
+
+		changeItemNameButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Call the addCustomer() method in the billing management class
-				BillingManagementSystem.changeItemName();
+				String itemName = JOptionPane.showInputDialog(null, "Enter item name:");
+				String newItemName = JOptionPane.showInputDialog(null, "Enter new item name:");
+				billingManagementSystem.changeItemName(itemName, newItemName);
 			}
 		});
-		ChangeItemPriceButton.addActionListener(new ActionListener() {
+
+		changeItemPriceButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Call the addCustomer() method in the billing management class
-				BillingManagementSystem.changeItemPrice();
+				String itemName = JOptionPane.showInputDialog(null, "Enter item name:");
+				double newPrice = Double.parseDouble(JOptionPane.showInputDialog(null, "Enter new item Price:"));
+				billingManagementSystem.changeItemPrice(itemName, newPrice);
+
 			}
 		});
-		ChangeItemQuantityButton.addActionListener(new ActionListener() {
+		changeItemQuantityButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				String itemName = JOptionPane.showInputDialog(null, "Enter item name:");
+				int newQuantity = Integer.parseInt(JOptionPane.showInputDialog(null, "Enter new item Quantity:"));
 				// Call the addCustomer() method in the billing management class
-				BillingManagementSystem.changeItemQuantity();
+				billingManagementSystem.changeItemQuantity(itemName, newQuantity);
 			}
 		});
-		ExitButton.addActionListener(new ActionListener() {
+		exitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Call the addCustomer() method in the billing management class
-				BillingManagementSystem.exit();
+				billingManagementSystem.exit();
 			}
 		});
 
