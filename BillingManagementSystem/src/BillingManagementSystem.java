@@ -14,15 +14,15 @@ public class BillingManagementSystem {
 		System.exit(0);
 	}
 
-	static void addItem() {
-		System.out.println("Enter item name:");
-		String name = scanner.nextLine();
+	private String inputValue;
 
-		System.out.println("Enter item price:");
-		double price = Double.parseDouble(scanner.nextLine());
+	static void addItem(String parsedName, Double parsedPrice, int parsedQuantity) {
 
-		System.out.println("Enter item quantity:");
-		int quantity = Integer.parseInt(scanner.nextLine());
+		String name = parsedName;
+
+		double price = parsedPrice;
+
+		int quantity = parsedQuantity;
 
 		InventoryItem item = findInventoryItem(name);
 
@@ -37,20 +37,22 @@ public class BillingManagementSystem {
 				}
 			}
 			item.increaseQuantity(quantity);
+			System.out.println("Success!");
 		}
 	}
 
-	static void removeItem() {
-		System.out.println("Enter item name:");
-		String name = scanner.nextLine();
-
-		InventoryItem item = findInventoryItem(name);
-
+	static void removeItem(String parsedName, int quantity) {
+		InventoryItem item = findInventoryItem(parsedName);
 		if (item == null) {
 			System.out.println("Item not found in inventory!");
 		} else {
-			inventory = removeInventoryItem(inventory, item);
+			inventory = removeInventoryItem(inventory, item, quantity);
 		}
+		System.out.println("Success!");
+	}
+
+	static void removeItemOption(String parsedName, int quantity) {
+
 	}
 
 	static void displayInventoryStatus() {
@@ -71,15 +73,11 @@ public class BillingManagementSystem {
 		}
 	}
 
-	static void generateReportOption() {
-		System.out.println("Enter 1 for complete report and any other number for a particular item report:");
-		int reportOption = Integer.parseInt(scanner.nextLine());
-		if (reportOption == 1)
+	static void generateReportOption(String reportOption) {
+		if (reportOption == "*")
 			generateReport();
 		else {
-			System.out.println("Enter item name for the report:");
-			String itemName = scanner.nextLine();
-			generateReport(itemName);
+			generateReport(reportOption);
 		}
 	}
 
@@ -103,63 +101,65 @@ public class BillingManagementSystem {
 	private static void generateReport(String name) {
 
 		System.out.printf("Sales report for %s:", name);
-		System.out.println("Name\tPrice\tQuantity\tTotal");
+		System.out.println("Name\tPrice\tQuantitySold\tQuatityLeft\tTotal");
 
 		for (InventoryItem item : inventory) {
 			if (item.getName().equals(name)) {
 				int soldQuantity = item.getOriginalQuantity() - item.getQuantity();
 				double total = item.getPrice() * soldQuantity;
-				System.out.printf("%s\t%.2f\t%d\t%.2f\n", item.getName(), item.getPrice(), soldQuantity, total);
+				System.out.printf("%s\t%.2f\t%d\t%d\t%.2f\n", item.getName(), item.getPrice(), soldQuantity,
+						item.getQuantity(), total);
+
 				break;
 			}
 		}
 		System.out.println("(Item does not exist in the inventory");
 	}
 
-	static void makeSale() {
+	static void makeSale(String parsedName, int parsedQuantity) {
 		HashMap<InventoryItem, Integer> bufferValues = new HashMap<InventoryItem, Integer>();
 		double total = 0;
-		while (true) {
-			System.out.println("Enter item name (or type 'end' to finish):");
-			String itemName = scanner.nextLine();
 
-			if (itemName.equals("end")) {
-				break;
-			}
+		System.out.println("Enter item name (or type 'end' to finish):");
+		String itemName = parsedName;
 
-			Set<InventoryItem> keys = bufferValues.keySet();
+		if (itemName.equals("end")) {
 
-			if (itemName.equals("cancel")) {
-				for (InventoryItem key : keys) {
-					key.setQuantity(bufferValues.get(key));
-				}
-				break;
-			}
-
-			InventoryItem item = findInventoryItem(itemName);
-
-			if (item == null) {
-				System.out.println("Item not found in inventory!");
-				continue;
-			}
-			bufferValues.put(item, item.getQuantity());
-
-			System.out.println("Enter item quantity:");
-			int quantity = Integer.parseInt(scanner.nextLine());
-
-			if (quantity > item.getQuantity()) {
-				System.out.println("Insufficient quantity in inventory!");
-				continue;
-			}
-			double itemTotal = item.getPrice() * quantity;
-			total += item.getPrice() * quantity;
-			totalItems += quantity;
-			totalAmount += total;
-
-			item.decreaseQuantity(quantity);
-			System.out.printf("Item total: $%.2f\n", itemTotal);
-			System.out.printf("%d %s added to cart, total: $%.2f\n", quantity, itemName, total);
 		}
+
+		Set<InventoryItem> keys = bufferValues.keySet();
+
+		if (itemName.equals("cancel")) {
+			for (InventoryItem key : keys) {
+				key.setQuantity(bufferValues.get(key));
+			}
+
+		}
+
+		InventoryItem item = findInventoryItem(itemName);
+
+		if (item == null) {
+			System.out.println("Item not found in inventory!");
+
+		}
+		bufferValues.put(item, item.getQuantity());
+
+		System.out.println("Enter item quantity:");
+		int quantity = parsedQuantity;
+
+		if (quantity > item.getQuantity()) {
+			System.out.println("Insufficient quantity in inventory!");
+
+		}
+		double itemTotal = item.getPrice() * quantity;
+		total += item.getPrice() * quantity;
+		totalItems += quantity;
+		totalAmount += total;
+
+		item.decreaseQuantity(quantity);
+		System.out.printf("Item total: $%.2f\n", itemTotal);
+		System.out.printf("%d %s added to cart, total: $%.2f\n", quantity, itemName, total);
+
 	}
 
 	private static InventoryItem findInventoryItem(String name) {
@@ -185,7 +185,8 @@ public class BillingManagementSystem {
 		return newInventory;
 	}
 
-	private static InventoryItem[] removeInventoryItem(InventoryItem[] inventory, InventoryItem item) {
+	private static InventoryItem[] removeInventoryItem(InventoryItem[] inventory, InventoryItem item,
+			int statedQuantity) {
 		int length = inventory.length;
 		InventoryItem[] newInventory = new InventoryItem[length];
 
@@ -197,7 +198,6 @@ public class BillingManagementSystem {
 			} else {
 				System.out.printf("Total: %d\n", inventory[i].getQuantity());
 				System.out.println("Enter the quantity to be removed:");
-				int statedQuantity = Integer.parseInt(scanner.nextLine());
 
 				if (statedQuantity == inventory[i].getQuantity()) {
 					continue;
@@ -217,9 +217,9 @@ public class BillingManagementSystem {
 	}
 
 	// Change the name of an item in the inventory
-	static void changeItemName() {
+	static void changeItemName(String parsedName, String parsedNewName) {
 		System.out.println("Enter item name to change:");
-		String name = scanner.nextLine();
+		String name = parsedName;
 
 		InventoryItem item = findInventoryItem(name);
 
@@ -227,7 +227,7 @@ public class BillingManagementSystem {
 			System.out.println("Item not found in inventory!");
 		} else {
 			System.out.println("Enter new item name:");
-			String newName = scanner.nextLine();
+			String newName = parsedNewName;
 			item.setName(newName);
 			System.out.println("Item name changed successfully!");
 		}
@@ -246,9 +246,9 @@ public class BillingManagementSystem {
 	// }
 
 	// Change the price of an item in the inventory
-	static void changeItemPrice() {
+	static void changeItemPrice(String parsedName, Double parsedNewPrice) {
 		System.out.println("Enter item name to change price:");
-		String name = scanner.nextLine();
+		String name = parsedName;
 
 		InventoryItem item = findInventoryItem(name);
 
@@ -256,7 +256,7 @@ public class BillingManagementSystem {
 			System.out.println("Item not found in inventory!");
 		} else {
 			System.out.println("Enter new price:");
-			double newPrice = Double.parseDouble(scanner.nextLine());
+			double newPrice = parsedNewPrice;
 			item.setPrice(newPrice);
 			System.out.println("Price changed successfully!");
 		}
@@ -277,9 +277,9 @@ public class BillingManagementSystem {
 	}
 
 	// Change the quantity of an item in the inventory
-	static void changeItemQuantity() {
+	static void changeItemQuantity(String parsedName, int parsedQuantity) {
 		System.out.println("Enter item name to change quantity:");
-		String name = scanner.nextLine();
+		String name = parsedName;
 
 		InventoryItem item = findInventoryItem(name);
 
@@ -287,7 +287,7 @@ public class BillingManagementSystem {
 			System.out.println("Item not found in inventory!");
 		} else {
 			System.out.println("Enter new quantity:");
-			int newQuantity = Integer.parseInt(scanner.nextLine());
+			int newQuantity = parsedQuantity;
 			item.setQuantity(newQuantity);
 			System.out.println("Quantity changed successfully!");
 		}
